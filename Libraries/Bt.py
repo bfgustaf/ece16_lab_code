@@ -64,6 +64,13 @@ class Bt:
                 finished = True
         return
 
+    def ble_read(self):
+        """
+        For compatibility with older versions of the library. Calls equivalent function in this version
+        :return:
+        """
+        return self.ble_read_buffer()
+
     def ble_read_buffer(self):
         """
         Reads entire BLE buffer. If connection is lost, attempts to reconnect.
