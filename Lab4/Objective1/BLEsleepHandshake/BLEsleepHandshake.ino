@@ -30,6 +30,7 @@ const unsigned long period_us = 1e6;            // We are using microseconds for
 
 // Define pin numbers
 const int buttonPin = 4;                        // Button pin
+const int ledPin =  13;                         // LED pin
 
 // --------------------------------------------------------------------------------
 // Button logic: return true of the button is pressed, otherwise return false
@@ -62,7 +63,7 @@ void initDisplay() {
 // --------------------------------------------------------------------------------
 // Show a message on the OLED display
 // --------------------------------------------------------------------------------
-void showMessage(char message[]) {
+void showMessage(const char * message) {
   display.setCursor(0, 0);     // Start at top-left corner
   display.clearDisplay();
   display.println(message);
@@ -160,7 +161,13 @@ void setup() {
   showMessage("Initializing ...");
   delay(1000);
 
-  // Initialize Serial (needed for setting the mode of the BLE)
+  // Initialize the LED pin as an output:
+  pinMode(ledPin, OUTPUT);
+
+  // Initialize the pushbutton pin as an input:
+  pinMode(buttonPin, INPUT_PULLUP);
+
+  // Initialize Serial communication
   Serial.begin(9600);
 
   // Initialize the BT Serial (AltSoftSerial)
