@@ -35,7 +35,7 @@ MPU6050 IMU(MPU_addr);                          // Instantiate IMU object
 // --------------------------------------------------------------------------------
 void interruptPinISR() {
   // Indicate data is ready
-  ipinReady = true;
+  imuDataReady = true;
 }
 
 
