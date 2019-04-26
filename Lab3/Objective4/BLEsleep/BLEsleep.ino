@@ -182,6 +182,7 @@ void loop() {
 
     // If a new message was received, show it
     if (i > 0) {
+      text[i++] = '\0';                // Insert a termination character after the last character read
       showMessage(text);
       Serial.println(text);
 
