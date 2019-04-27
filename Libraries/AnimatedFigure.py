@@ -76,7 +76,7 @@ class AnimatedFigure:
                 data_range = np.max(y) - np.min(y)
                 new_max_lim = np.max(y) + data_range * 0.05 + 0.0000001  # ensures if y is constant there is a dif
                 new_min_lim = np.min(y) - data_range * 0.05 - 0.0000001  # ensures if y is constant there is a dif
-                if not ((.9 < ymax / new_max_lim < 1.1) and (.9 < ymin / new_min_lim < 1.1)):
+                if not ((.9 < ymax / new_max_lim < 1.1) and (.9 < ymin / new_min_lim < 1.1)) and idx > 10:
                     ax.set_ylim(bottom=new_min_lim, top=new_max_lim)
         return self.live_plot
 
