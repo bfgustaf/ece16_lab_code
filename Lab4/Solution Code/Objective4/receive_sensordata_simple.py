@@ -134,35 +134,34 @@ def update_data():
 """
 This is where the main code starts
 """
-while True:  # this forces the try/except clause to repeat in case BLE disconnects or other errors occur
-    try:
-        # Take care of some initializations
-        initialize_buffers()
-        initialize_ble()
+try:
+    # Take care of some initializations
+    initialize_buffers()
+    initialize_ble()
 
-        # If we are plotting our data
-        # Call the animation with our update_data() function
-        # This will call our function repeatedly and plot the results
-        if live_plot:
-            # create animation object
-            # Plot about 1/5 of the data in the buffer
-            an = AnimatedFigure(update_data, plot_samples=200, debug=True)
-            axes = an.axes
-            axes[0].set_title('Data')
-            axes[0].set_xlabel('Time (s)')
-            axes[0].set_ylabel('Voltage (V)')
+    # If we are plotting our data
+    # Call the animation with our update_data() function
+    # This will call our function repeatedly and plot the results
+    if live_plot:
+        # create animation object
+        # Plot about 1/5 of the data in the buffer
+        an = AnimatedFigure(update_data, plot_samples=200, debug=True)
+        axes = an.axes
+        axes[0].set_title('Data')
+        axes[0].set_xlabel('Time (s)')
+        axes[0].set_ylabel('Voltage (V)')
 
-            an.animate()  # only call this after configuring your figure
+        an.animate()  # only call this after configuring your figure
 
-        # If we don't want to plot at the same time, call the update_data() function repeatedly
-        else:
-            while True:
-                update_data()
+    # If we don't want to plot at the same time, call the update_data() function repeatedly
+    else:
+        while True:
+            update_data()
 
-    # Catch the user pressing Ctlr+C
-    except (Exception, KeyboardInterrupt):
-        if write_flag:
-            write_file.close()
-        if read_flag:
-            read_file.close()
-        bt.ble_close()
+# Catch the user pressing Ctlr+C
+except (Exception, KeyboardInterrupt):
+    if write_flag:
+        write_file.close()
+    if read_flag:
+        read_file.close()
+    bt.ble_close()
