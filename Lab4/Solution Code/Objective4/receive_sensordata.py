@@ -141,45 +141,47 @@ def update_data():
 """
 This is where the main code starts
 """
-try:
-    # Take care of some initializations
-    initialize_buffers()
-    initialize_ble()
-
-    # If we are plotting our data
-    # Call the animation with our update_data() function
-    # This will call our function repeatedly and plot the results
-    if live_plot:
-        # create animation object
-        # Plot about 1/5 of the data in the buffer
-        an = AnimatedFigure(update_data, plot_samples=200, debug=True)
-        axes = an.axes
-        axes[0].set_title('Data')
-        axes[0].set_xlabel('Time (s)')
-        axes[0].set_ylabel('Voltage (V)')
-
-        an.animate()  # only call this after configuring your figure
-
-    # If we don't want to plot at the same time, call the update_data() function repeatedly
-    else:
-        while True:
-            update_data()
-
-# Catch the user pressing Ctlr+C
-except (Exception, KeyboardInterrupt) as e:
-    # if any type of exception occurs, it is printed and the loop is re-started
+while True:
     try:
-        if write_flag and write_file:
-            write_file.close()
-        if read_flag and read_file:
-            read_file.close()
+        # Take care of some initializations
+        initialize_buffers()
+        initialize_ble()
+
+        # If we are plotting our data
+        # Call the animation with our update_data() function
+        # This will call our function repeatedly and plot the results
+        if live_plot:
+            # create animation object
+            # Plot about 1/5 of the data in the buffer
+            an = AnimatedFigure(update_data, plot_samples=200, debug=True)
+            axes = an.axes
+            axes[0].set_title('Data')
+            axes[0].set_xlabel('Time (s)')
+            axes[0].set_ylabel('Voltage (V)')
+
+            an.animate()  # only call this after configuring your figure
+
+        # If we don't want to plot at the same time, call the update_data() function repeatedly
         else:
-            bt.ble_close()              # Try to close the BLE connection cleanly (may fail)
-    except Exception as e2:
-        print(e2)
-        print("Error during cleanup, you may want to restart/replug everything.")
-    if isinstance(e, KeyboardInterrupt):
-        print("Exiting program due to KeyboardInterrupt")
-    else:
-        print("Restarting program due to error:")
-        print(e)
+            while True:
+                update_data()
+
+    # Catch the user pressing Ctlr+C
+    except (Exception, KeyboardInterrupt) as e:
+        # if any type of exception occurs, it is printed and the loop is re-started
+        try:
+            if write_flag and write_file:
+                write_file.close()
+            if read_flag and read_file:
+                read_file.close()
+            else:
+                bt.ble_close()              # Try to close the BLE connection cleanly (may fail)
+        except Exception as e2:
+            print(e2)
+            print("Error during cleanup, you may want to restart/replug everything.")
+        if isinstance(e, KeyboardInterrupt):
+            print("Exiting program due to KeyboardInterrupt")
+            break
+        else:
+            print("Restarting program due to error:")
+            print(e)
