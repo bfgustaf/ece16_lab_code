@@ -101,5 +101,5 @@ class AnimatedFigure:
         # instantiate animation
         self.ani = animation.FuncAnimation(
             fig=self.axes[0].figure, func=self.update_plots, interval=self.interval, blit=self.blit)
-        plt.show(block=False)
+        plt.show(block=True)
         return
