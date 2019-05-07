@@ -16,7 +16,8 @@ class Bt:
         :return: None
         """
         print("Resetting connection")
-        self.ble_conn = serial.Serial(port=self.serial_port, baudrate=self.baudrate, timeout=1)
+        if (self.ble_conn is None) or self.ble_conn.closed:
+            self.ble_conn = serial.Serial(port=self.serial_port, baudrate=self.baudrate, timeout=1)
         self.ble_write("AT")
         sleep(2)
         self.ble_flush()  # remove any connection lost messages
@@ -112,15 +113,15 @@ class Bt:
                     msg += c
                     c = self.ble_conn.read(1).decode("utf-8")
 
-                attempts = 0
-                while "OK+LOST" in msg and attempts < 10:
-                    self.ble_setup()
-                    print("Connection dropped, attempting to reconnect")
-                    attempts = attempts + 1
-                    msg = self.ble_conn.readline(self.ble_conn.in_waiting).decode("utf-8")
-                if attempts >= 10:
-                    print("Failed to reconnect, please check hardware.")
-                    raise IOError
+                    attempts = 0
+                    while "OK+LOST" in msg and attempts < 10:
+                        self.ble_setup()
+                        print("Connection dropped, attempting to reconnect")
+                        attempts = attempts + 1
+                        msg = self.ble_conn.readline(self.ble_conn.in_waiting).decode("utf-8")
+                    if attempts >= 10:
+                        print("Failed to reconnect, please check hardware.")
+                        raise IOError
                 return msg
         except ValueError as error:
             print(error)

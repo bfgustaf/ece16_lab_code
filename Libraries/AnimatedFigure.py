@@ -62,7 +62,9 @@ class AnimatedFigure:
             if self.blit:
                 len_dif = self.plot_samples - len(y)
                 if len_dif > 0:
-                    y_blit = [np.nan] * len_dif + y
+                    y_blit = []
+                    y_blit[:len_dif] = [np.nan] * len_dif
+                    y_blit[len_dif:] = y
                 else:
                     y_blit = y
                 self.live_plot[plot_num].set_ydata(y_blit)
