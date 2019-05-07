@@ -1,3 +1,14 @@
+# Set backend
+import matplotlib
+
+try:
+    matplotlib.use('TkAgg')
+except ImportError as e:
+    print("Unable to load TkAgg.")
+    print("Please to go to Tools > Preferences > IPython Console > Graphics and change Backend to \"Tkinter\"")
+    print(e)
+    raise ImportError
+
 # Imports
 import numpy as np
 from matplotlib import animation
@@ -34,15 +45,19 @@ class AnimatedFigure:
         if self.blit:
             # make copies to avoid overwriting mutable objects
             initial_plot_data = [(np.arange(0, self.plot_samples), np.zeros(self.plot_samples)) for _ in init_data]
-            self.xdata = initial_plot_data[0][0]     # persists
+            self.xdata = initial_plot_data[0][0]  # persists
         else:
             initial_plot_data = init_data
-        self.fig, self.axes = plt.subplots(1, self.num_plots)
-        if self.num_plots == 1:
-            self.axes = [self.axes]     # we need it to be iterable for zip to work on the next line
+        self.fig = plt.figure()
+        self.axes = self.fig.subplots(1, self.num_plots, squeeze=False)[0]
+        self.fig.canvas.mpl_connect('close_event', self.stop)
+        try:
+            self.fig.canvas._master.report_callback_exception = self.exception_handler
+        except AttributeError:
+            print("Please set backend to Tkinter!")
         self.live_plot = [axes.plot(t, y)[0] for axes, (t, y) in zip(self.axes, initial_plot_data)]
         plt.tight_layout()
-        self.ani = None     # placeholder for animation object
+        self.ani = None  # placeholder for animation object
 
     def update_plots(self, idx):
         """
@@ -54,7 +69,7 @@ class AnimatedFigure:
         """
         self.fps()
 
-        data = self.data_function()   # data_function must return a tuple containing lists of x,y data
+        data = self.data_function()  # data_function must return a tuple containing lists of x,y data
 
         for (x, y), ax, plot_num in zip(data, self.axes, range(self.num_plots)):
             x = x[-self.plot_samples:]
@@ -105,3 +120,10 @@ class AnimatedFigure:
             fig=self.axes[0].figure, func=self.update_plots, interval=self.interval, blit=self.blit)
         plt.show(block=True)
         return
+
+    def stop(self, event):
+        self.ani.event_source.stop()
+        raise KeyboardInterrupt
+
+    def exception_handler(self, exc, val, tb):
+        raise exc
